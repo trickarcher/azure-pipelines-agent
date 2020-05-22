@@ -4,8 +4,8 @@
 # https://aka.ms/yaml
 
 variables:
-  DOCKER_USERNAME: cwpearson
-  IMAGE_NAME: azp-cuda-agent
+  DOCKER_USERNAME: trickarcher
+  IMAGE_NAME: awkward_1_0_cuda_18_04_10_1
 
 stages:
 - stage: "NUMA_Build"
@@ -13,14 +13,10 @@ stages:
   - job: "docker"
     strategy:
       matrix:
-        amd64-ubuntu1604-cuda92:
-          IMAGE_TAG: amd64-ubuntu1604-cuda92
-        amd64-ubuntu1604-cuda100:
-          IMAGE_TAG: amd64-ubuntu1604-cuda100
-        amd64-ubuntu1604-cuda101:
-          IMAGE_TAG: amd64-ubuntu1604-cuda101
+        amd64-ubuntu1804-cuda101:
+          IMAGE_TAG: awkward_1_0_cuda_18_04_10_1
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-18.04'
     steps:
     - script: |
         cd dockeragent

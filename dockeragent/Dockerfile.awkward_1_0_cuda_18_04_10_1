@@ -1,10 +1,13 @@
 #FROM ubuntu:18.04
-FROM nvidia/cuda:9.2-runtime-ubuntu18.04
+FROM nvidia/cuda:10.1-runtime-ubuntu18.04
 
 # To make it easier for build and release pipelines to run apt-get,
 # configure apt to not require confirmation (assume the -y argument by default)
-ENV DEBIAN_FRONTEND=noninteractive
-RUN echo "APT::Get::Assume-Yes \"true\";" > /etc/apt/apt.conf.d/90assumeyes
+# ENV DEBIAN_FRONTEND=noninteractive
+
+# ENV NVIDIA_VISIBLE_DEVICES all
+# ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+# ENV NVIDIA_REQUIRE_CUDA "cuda==10.1"
 
 RUN apt-get update \
 && apt-get install -y --no-install-recommends \
@@ -13,10 +16,15 @@ RUN apt-get update \
         jq \
         git \
         iputils-ping \
-        libcurl3 \
-        libicu55
+        libcurl4 \
+        libicu60 \
+        libunwind8 \
+        netcat \
+        cmake \
+        libssl1.0.0
 
 WORKDIR /azp
+
 
 # if the pool stops accepting jobs, check that there is not a new agent to download
 # https://dev.azure.com/c3srdev/_settings/agentpools

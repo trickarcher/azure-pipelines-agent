@@ -13,10 +13,10 @@ import pathlib
 
 
 AZP_TOKEN = None
-AZP_URL = "https://dev.azure.com/c3srdev"
-AZP_POOL = "amd64-ubuntu1604-cuda100"
+AZP_URL = "https://dev.azure.com/trickarcher"
+AZP_POOL = "amd64-ubuntu1604-cuda101"
 AZP_AGENT_NAME_BASE = socket.gethostname()
-AGENT_NAME = "cwpearson/azp-cuda-agent:amd64-ubuntu1604-cuda100"
+AGENT_NAME = "trickarcher/scikit_hep:cuda_10_0_ubuntu_18.04_amd64"
 OOM_SCORE_ADJ = 1000 # make containers get killed first in a low-memory situation
 
 CHECK_WAIT_SECONDS = 60
@@ -25,7 +25,7 @@ DOCKER_CLIENT_TIMEOUT = 10
 
 parser = argparse.ArgumentParser()
 parser.add_argument("PAT", help="Azure Pipelines personal access token")
-parser.add_argument("URL", help="Azure Pipelines url (https://dev.azure.com/<project>)")
+parser.add_argument("URL", help="Azure Pipelines url (https://dev.azure.com/trickarcher)")
 parser.add_argument("POOL", type=str, help="Azure Pipelines pool")
 parser.add_argument("-n", type=int, help="number of agents (default = 2)", default=2)
 parser.add_argument("--name", help="agent name (default = {})".format(socket.gethostname()), default=socket.gethostname())
@@ -100,7 +100,7 @@ client = docker.from_env(timeout=DOCKER_CLIENT_TIMEOUT)
 
 
 # Test for nvidia-docker
-NVIDIA_DOCKER_TEST_IMAGE = "nvidia/cuda:9.0-base"
+NVIDIA_DOCKER_TEST_IMAGE = "nvidia/cuda:10.1-runtime"
 NVIDIA_DOCKER_TEST_COMMAND = "nvidia-smi"
 NVIDIA_DOCKER_RUNTIME = "nvidia"
 print("testing for nvidia-docker")
@@ -119,7 +119,7 @@ print("nvidia-docker looks good")
 if args.docker:
     DOCKER_IMAGE = args.docker
 else:
-    DOCKER_IMAGE  = "cwpearson/azp-cuda-agent:"
+    DOCKER_IMAGE  = "trickarcher/awkward_1_0_cuda_18_04_10_1"
 
     machine = get_arch()
     if not machine:
@@ -127,14 +127,14 @@ else:
         sys.exit(1)
     # [9, 2, 88]
     # [10, 1]
-    versionStr = "".join(get_cuda_version()[0:2])
-    if not versionStr:
-        print("unable to detect installed cuda")
-        sys.exit(1)
+    # versionStr = "".join(get_cuda_version()[0:2])
+    # if not versionStr:
+    #     print("unable to detect installed cuda")
+    #     sys.exit(1)
 
-    tag = "{}-ubuntu1604-cuda{}".format(machine, versionStr)
+    # tag = "{}-ubuntu1604-cuda{}".format(machine, versionStr)
 
-    DOCKER_IMAGE += tag
+    # DOCKER_IMAGE += tag
 
     print("autodetected docker image {}".format(DOCKER_IMAGE))
 
@@ -236,12 +236,14 @@ def launch_agent(agentID, volumeSpecs):
         volumes=volumes,
     )
     agents[agentID] = newContainer.id
+    print(newContainer)
     print(f"launched {newContainer.short_id} as {newContainer.name}")
 
     return newContainer
 
 def scan_agents():
     # check whether our agents are running
+    print(agents.items())
     for agentID, containerID in agents.items():
         if containerID is not None:
             print("looking for container {}".format(containerID))
