@@ -13,8 +13,8 @@ stages:
   - job: "docker"
     strategy:
       matrix:
-        amd64-ubuntu1804-cuda101:
-          IMAGE_TAG: awkward_1_0_cuda_18_04_10_1
+        amd64-ubuntu1604-cuda101:
+          IMAGE_TAG: latest
     pool:
       vmImage: 'ubuntu-18.04'
     steps:
